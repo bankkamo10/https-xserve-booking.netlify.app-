@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ตารางจองคิวส่งสินค้า - ลงเวลา</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--tx:#1b1f24;--mu:#667085;--bd:#dfe3e8;--ac:#0b6bcb;--ok:#117a3d;--bad:#c62828;--wn:#b45309;--okb:#e3f5ea;--inb:#e4effb;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14171b;--card:#1d2127;--tx:#eceff3;--mu:#98a2b3;--bd:#2f353d;--ac:#4a9df0;--ok:#4cc27a;--bad:#ff7a7a;--wn:#f5a54a;--okb:#16301f;--inb:#17283a}}
+:root[data-theme="dark"]{--bg:#14171b;--card:#1d2127;--tx:#eceff3;--mu:#98a2b3;--bd:#2f353d;--ac:#4a9df0;--ok:#4cc27a;--bad:#ff7a7a;--wn:#f5a54a;--okb:#16301f;--inb:#17283a}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg);color:var(--tx);font-family:'Sarabun',system-ui,sans-serif;font-size:16px;padding:0 14px 14px;max-width:1100px;margin:0 auto}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:10}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--bg);padding:10px 0 6px;border-bottom:1px solid var(--bd);margin-bottom:12px}
+h1{font-size:19px;margin:0}
+.logo{height:46px;width:auto;background:#fff;border-radius:8px;padding:3px 6px;border:1px solid var(--bd)}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px;margin-bottom:12px}
+button,label.b{font:inherit;border:0;border-radius:8px;padding:9px 13px;background:var(--ac);color:#fff;cursor:pointer;display:inline-block}
+button.g,label.b.g{background:transparent;color:var(--tx);border:1px solid var(--bd)}button.g.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+button.sm{padding:4px 7px;font-size:13px}button.x{background:transparent;color:var(--bad);padding:4px 6px}
+input,select{font:inherit;padding:8px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);width:100%}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.row.m{margin-top:8px}.row>.f{flex:1;min-width:160px}.row>.w{width:140px}
+#msg{min-height:22px;margin-top:6px;font-weight:600}.ok{color:var(--ok)}.bad{color:var(--bad)}.mu{color:var(--mu);font-size:14px}
+.kp{display:flex;gap:8px;flex-wrap:wrap}.kp div{flex:1;min-width:90px;background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:8px 10px}.kp b{font-size:22px;display:block}
+.tw{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:980px}
+th,td{text-align:left;padding:6px;border-bottom:1px solid var(--bd);font-size:14px;vertical-align:middle}th{color:var(--mu);font-weight:600}
+td input{padding:5px;font-size:14px}tr.in td{background:var(--inb)}tr.dn td{background:var(--okb)}
+.tc{display:flex;gap:4px;align-items:center}.tc input{width:104px}
+.s-ok{color:var(--ok)}.s-late{color:var(--bad)}.s-early{color:var(--wn)}
+details summary{cursor:pointer;font-weight:600}
+#ov{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:50;display:none;align-items:center;justify-content:center;padding:16px}
+.mb{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:16px;width:100%;max-width:440px;max-height:90vh;overflow:auto}
+.mb h3{margin:0 0 8px;font-size:18px}.mb p{margin:0 0 8px}.mb label{display:block;margin-top:8px;color:var(--mu);font-size:14px}.mb .row{margin-top:12px;justify-content:flex-end}
+button.dg{background:var(--bad);color:#fff}button.gd{background:transparent;color:var(--bad);border:1px solid var(--bad)}
+
+#fab{display:none}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+@media(max-width:720px){
+body{padding:0 10px 90px;font-size:16px}
+.top{position:static;padding:8px 0}
+.top .row{gap:8px}.logo{height:38px}
+h1{font-size:15px;flex:1 1 0;min-width:0}
+h1 .mu{display:block;font-size:13px}
+#exp{display:none}
+.top label.b{flex:1 1 100%;text-align:center;padding:12px}
+.kp div{min-width:calc(33% - 8px);padding:6px 8px}.kp b{font-size:20px}
+.card{padding:12px}
+#q{font-size:16px;height:46px}
+#gb,.chips{display:flex;flex-wrap:nowrap;overflow-x:auto;width:100%;gap:6px;padding-bottom:2px}
+#gb button,.chips button{flex:0 0 auto;padding:9px 14px;font-size:15px}
+#clr{width:100%;padding:10px}
+.row>.f,.row>.w{flex:1 1 100%;width:100%}
+.wf>*{flex:1 1 100%}.wf .tc{width:100%}.wf .tc input{height:44px}.wf button{padding:12px}
+.tw{overflow:visible}
+table{min-width:0!important}table,tbody{display:block}thead{display:none}
+#tb tr{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;padding:12px;margin-bottom:10px;border:1px solid var(--bd);border-left-width:6px;border-radius:12px;background:var(--card)}
+#tb tr.in{background:var(--inb);border-left-color:var(--ac)}#tb tr.dn{background:var(--okb);border-left-color:var(--ok)}#tb tr.lt{border-left-color:var(--bad)}
+#tb td{background:none!important;border:0;padding:0;font-size:15px;min-width:0}
+#tb td::before{content:attr(data-l);display:block;font-size:12px;color:var(--mu);margin-bottom:2px}
+#tb td.c3{grid-column:1/-1;order:1;font-weight:600;font-size:17px}
+#tb td.c9{grid-column:1/-1;order:2;font-weight:600}
+#tb td.c3::before,#tb td.c9::before,#tb td.c10::before{display:none}
+#tb td.c0{grid-column:span 2;order:3}#tb td.c1{grid-column:span 1;order:3}#tb td.c2{grid-column:span 3;order:3}
+#tb td.c4{grid-column:span 3;order:4}#tb td.c5{grid-column:span 3;order:4}
+#tb td.c6{grid-column:span 2;order:5}#tb td.c7{grid-column:span 4;order:5}
+#tb td.c8{grid-column:1/-1;order:6}#tb td.c10{grid-column:1/-1;order:7}
+#tb td input{min-width:0!important;width:100%;height:46px;font-size:16px;padding:8px 10px}
+#tb .tc{gap:6px}#tb .tc input{flex:1;width:auto}#tb .tc button{height:46px;padding:0 12px;font-size:15px}
+#tb .nw{display:inline}
+#tb td.c10 button{width:100%;padding:11px}
+#fab{display:block;position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:20;padding:14px 20px;border-radius:30px;box-shadow:0 4px 14px rgba(0,0,0,.3);font-weight:600}
+.mb{padding:16px}.mb .row button{padding:12px 16px}
+}
+.nw{display:none}
+.ro .wonly{display:none!important}
+#sync.on{color:var(--ok)}#sync.off{color:var(--wn)}#sync{margin-left:6px}
+</style></head><body>
+<div class="top">
+ <div class="row"><img class="logo" alt="Xserve Fulfillment" src="data:image/png;base64,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"><h1 style="flex:1">📦 ตารางจองคิวส่งสินค้า <span class="mu" id="dt"></span><span class="mu" id="sync"></span></h1>
+ <label class="b g wonly" for="up">📂 โยนไฟล์ Supp (Excel)</label><input type="file" id="up" accept=".xlsx,.xls" style="display:none">
+ <button id="exp">⬇ ดาวน์โหลด Excel</button></div>
+ <div id="msg"></div>
+</div>
+<div class="card"><div class="kp" id="kp"></div></div>
+<div class="card wonly">
+ <details><summary>➕ เพิ่ม Supp ที่มานอกตาราง</summary>
+  <div class="row m wf"><input class="f" id="wn" placeholder="ชื่อบริษัท"><select class="w" id="wg"></select><div class="tc"><input type="time" id="wt"><button class="sm g" id="wnow" type="button">ตอนนี้</button></div><button id="wadd">เพิ่ม</button></div>
+ </details>
+</div>
+<div class="card">
+ <div class="row"><input class="f" id="q" placeholder="🔍 ค้นหาชื่อบริษัท…" autocomplete="off"><span id="gb"></span><button class="gd wonly" id="clr">🗑 ล้างข้อมูล</button></div>
+ <div class="chips" id="sb"></div>
+ <div id="emp" class="mu" style="display:none;padding:18px;text-align:center">ยังไม่มีตารางจองคิว — กด "📂 โยนไฟล์ Supp (Excel)" เพื่อโหลดตาราง</div>
+ <div class="tw" style="margin-top:8px"><table><thead><tr><th>ลำดับ</th><th>ประตู</th><th>เวลาจอง</th><th>Supplier</th><th>เวลาส่ง</th><th>เวลาสิ้นสุด</th><th>จำนวนบิล</th><th>ชื่อขนส่ง</th><th>เบอร์โทรขนส่ง</th><th>สถานะ</th><th></th></tr></thead><tbody id="tb"></tbody></table></div>
+ <div class="mu" style="margin-top:8px">เลือกเวลาในช่องได้เลย หรือกด "⏱" เพื่อใส่เวลาปัจจุบัน · ข้อมูลเก็บในเบราว์เซอร์เครื่องนี้ กดดาวน์โหลด Excel ได้ตลอดเวลา</div>
+</div>
+<button id="fab">⬇ Excel</button>
+<div id="ov"></div>
+<script>
+const $=id=>document.getElementById(id),pad=n=>String(n).padStart(2,'0');
+const REC=['arr','end','bills','carrier','phone'],LKEY='deliveryLog.v3';
+let S={date:'-',data:[],walk:[],rec:{},wc:0},gf='all',sf='all',db=null,rowsC=null,pend=false,loaded=false,ro=false;
+const save=()=>{if(db)return;try{localStorage.setItem(LKEY,JSON.stringify(S))}catch(e){}};
+const say=(t,c)=>{$('msg').textContent=t;$('msg').className=c||''};
+const nowT=()=>{const d=new Date();return pad(d.getHours())+':'+pad(d.getMinutes())};
+const mins=t=>{const m=/^(\d{1,2}):(\d{2})/.exec(t||'');return m?+m[1]*60+ +m[2]:null};
+const norm=s=>String(s||'').toLowerCase().replace(/\s+/g,'');
+const rows=()=>S.data.concat(S.walk.map(w=>({n:w.id,gate:w.gate,slot:'ไม่มีคิวจอง',name:w.name,walk:true})));
+const docId=r=>r.walk?r.n:'s'+r.n;
+const gates=()=>[...new Set(S.data.map(r=>r.gate))];
+function setSync(){const e=$('sync');
+ if(ro){e.textContent='👁 ดูอย่างเดียว';e.className='mu off'}
+ else if(db){e.textContent='🟢 ซิงก์ออนไลน์';e.className='mu on'}
+ else{e.textContent='🟠 เครื่องนี้เท่านั้น (ไม่ซิงก์)';e.className='mu off'}
+ document.body.classList.toggle('ro',ro)}
+function status(r){const c=S.rec[r.n]||{};if(!c.arr)return['รอมา',''];
+ let l=['ตรงคิว','s-ok'];const m=/(\d{1,2}:\d{2})\s*-\s*(\d{1,2}:\d{2})/.exec(r.slot);
+ if(m){const a=mins(c.arr),s=mins(m[1]),e=mins(m[2]);if(a<s)l=['มาก่อนคิว','s-early'];else if(a>e)l=['มาสาย','s-late']}else l=['นอกตาราง','s-early'];
+ return[l[0]+(c.end?' · เสร็จแล้ว':' · กำลังลงของ'),l[1]]}
+/* ---------- store ---------- */
+function fromDocs(docs){const data=[],walk=[],rec={};
+ docs.forEach(d=>{const x=d.data();if(!x)return;const c={};REC.forEach(k=>{if(x[k])c[k]=String(x[k])});
+  if(x.walk){walk.push({id:d.id,name:x.name||'',gate:x.gate||'อื่นๆ',ts:x.ts||0});rec[d.id]=c}
+  else if(x.n!=null){data.push({n:x.n,gate:String(x.gate||''),slot:String(x.slot||''),name:String(x.name||'')});rec[x.n]=c}});
+ data.sort((a,b)=>a.n-b.n);walk.sort((a,b)=>a.ts-b.ts);S.data=data;S.walk=walk;S.rec=rec}
+async function wr(fn){try{await fn();return true}catch(e){
+ say(e&&e.code==='invalid_argument'?'บันทึกไม่ได้: บัญชีนี้ไม่มีสิทธิ์แก้ไขข้อมูล (ต้องเป็น Contributor ขึ้นไป)':'บันทึกไม่สำเร็จ ตรวจสอบอินเทอร์เน็ตแล้วลองอีกครั้ง','bad');return false}}
+async function patch(r,f,force){
+ if(db){const ok=await wr(()=>rowsC.doc(docId(r)).update(f));if(ok&&force)render(true);return}
+ const row=r.walk?S.walk.find(w=>w.id===r.n):S.data.find(x=>x.n===r.n);
+ for(const k in f){if(REC.includes(k)){(S.rec[r.n]||(S.rec[r.n]={}))[k]=f[k]||undefined}else if(row)row[k]=f[k]}
+ save();render(true)}
+async function addWalk(name,gate,arr){const id='w'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+ if(db){return wr(()=>rowsC.doc(id).set({walk:true,name,gate,ts:Date.now(),arr:arr||'',end:'',bills:'',carrier:'',phone:''}))}
+ S.walk.push({id,name,gate,ts:Date.now()});if(arr)S.rec[id]={arr};save();render(true);return true}
+async function delRow(r){if(db)return wr(()=>rowsC.doc(docId(r)).delete());
+ S.data=S.data.filter(x=>x.n!==r.n);S.walk=S.walk.filter(w=>w.id!==r.n);delete S.rec[r.n];save();render(true);return true}
+async function pool(tasks,n){for(let i=0;i<tasks.length;i+=n){await Promise.all(tasks.slice(i,i+n).map(f=>f()))}}
+async function setMeta(date,file){const at=Date.now();if(db)await wr(()=>db.doc('meta/info').set({date,file:file||'',at}));else{S.date=date;S.file=file||'';S.at=at;save()}}
+const fmtAt=t=>{const d=new Date(t);return pad(d.getDate())+'/'+pad(d.getMonth()+1)+' '+pad(d.getHours())+':'+pad(d.getMinutes())};
+/* ---------- render ---------- */
+const inTb=()=>{const a=document.activeElement;return a&&a.tagName==='INPUT'&&a.closest&&a.closest('#tb')};
+function sched(){if(inTb()){pend=true;return}render()}
+function render(force){
+ if(!force&&inTb()){pend=true;return}pend=false;
+ $('dt').textContent='วันที่ '+S.date+(S.file?' · ไฟล์ '+S.file+(S.at?' (โหลดเมื่อ '+fmtAt(S.at)+')':''):'');setSync();
+ const gs=gates(),gb=$('gb');gb.innerHTML='';
+ [['all','ทั้งหมด'],...gs.map(g=>[g,'ประตู '+g])].forEach(([k,t])=>{const b=document.createElement('button');b.className='g sm'+(gf===k?' on':'');b.textContent=t;b.onclick=()=>{gf=k;render(true)};gb.appendChild(b);gb.appendChild(document.createTextNode(' '))});
+ const wg=$('wg'),cur=wg.value;wg.innerHTML='';[...gs,'อื่นๆ'].forEach(g=>{const o=document.createElement('option');o.value=g;o.textContent=g==='อื่นๆ'?'ประตูอื่นๆ':'ประตู '+g;wg.appendChild(o)});if(cur)wg.value=cur;
+ const sb=$('sb');sb.innerHTML='';[['all','ทั้งหมด'],['wait','รอมา'],['in','กำลังลงของ'],['done','เสร็จแล้ว']].forEach(([k,t])=>{const b=document.createElement('button');b.className='g sm'+(sf===k?' on':'');b.textContent=t;b.onclick=()=>{sf=k;render(true)};sb.appendChild(b)});
+ const sfOk=r=>{const c=S.rec[r.n]||{};return sf==='all'||(sf==='wait'&&!c.arr)||(sf==='in'&&c.arr&&!c.end)||(sf==='done'&&c.end)};
+ const k=norm($('q').value),tb=$('tb');tb.innerHTML='';
+ $('emp').style.display=loaded&&!S.data.length&&!S.walk.length?'block':'none';
+ rows().filter(r=>(gf==='all'||r.gate===gf)&&(!k||norm(r.name).includes(k))&&sfOk(r)).forEach(r=>{
+  const c=S.rec[r.n]||{},tr=document.createElement('tr');tr.className=c.end?'dn':c.arr?'in':'';
+  const td=v=>{const e=document.createElement('td');e.textContent=v;tr.appendChild(e);return e};
+  td(r.walk?'นอกตาราง':r.n);td(r.gate);td(r.slot);td(r.name);
+  ['arr','end'].forEach(f=>{const e=document.createElement('td'),w=document.createElement('div'),i=document.createElement('input'),b=document.createElement('button');
+   w.className='tc';i.type='time';i.value=c[f]||'';i.disabled=ro;b.className='sm g wonly';b.innerHTML='⏱<span class="nw"> ตอนนี้</span>';b.title='ใส่เวลาปัจจุบัน';
+   i.onchange=()=>patch(r,{[f]:i.value||''},true);b.onclick=()=>patch(r,{[f]:nowT()},true);
+   w.appendChild(i);w.appendChild(b);e.appendChild(w);tr.appendChild(e)});
+  [['bills','จำนวนบิล',70],['carrier','ชื่อขนส่ง',130],['phone','เบอร์โทร',120]].forEach(([f,ph,w])=>{const e=document.createElement('td'),i=document.createElement('input');i.value=c[f]||'';i.placeholder=ph;i.disabled=ro;if(f==='phone')i.type='tel';if(f==='bills')i.inputMode='numeric';i.style.minWidth=w+'px';i.onchange=()=>patch(r,{[f]:i.value.trim()});e.appendChild(i);tr.appendChild(e)});
+  const s=status(r);td(s[0]).className=s[1];
+  const d=document.createElement('td');{const b=document.createElement('button');b.className='g sm wonly';b.textContent='✎ แก้ไข';b.onclick=()=>editRow(r);d.appendChild(b)}tr.appendChild(d);
+  const LB=['คิว','ประตู','เวลาจอง','Supplier','เวลาส่ง','เวลาสิ้นสุด','จำนวนบิล','ชื่อขนส่ง','เบอร์โทรขนส่ง','สถานะ',''];[...tr.children].forEach((e,i)=>{e.classList.add('c'+i);e.dataset.l=LB[i]});if(s[1]==='s-late')tr.classList.add('lt');
+  tb.appendChild(tr)});
+ const rs=rows(),ar=S.data.filter(r=>(S.rec[r.n]||{}).arr).length,dn=rs.filter(r=>(S.rec[r.n]||{}).end).length,lt=rs.filter(r=>status(r)[1]==='s-late').length;
+ $('kp').innerHTML='<div><b>'+S.data.length+'</b>คิวจองทั้งหมด</div><div><b>'+ar+'</b>มาถึงแล้ว</div><div><b>'+(S.data.length-ar)+'</b>ยังไม่มา</div><div><b>'+dn+'</b>ลงของเสร็จ</div><div><b class="s-late">'+lt+'</b>มาสาย</div><div><b>'+S.walk.length+'</b>นอกตาราง</div>';
+}
+$('tb').addEventListener('focusout',()=>setTimeout(()=>{if(pend&&!inTb())render(true)},80));
+/* ---------- modals ---------- */
+const ov=$('ov');
+function mk(t,c,x){const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
+function modal(build){return new Promise(res=>{ov.innerHTML='';const bx=mk('div','mb');ov.appendChild(bx);ov.style.display='flex';
+ const close=v=>{ov.style.display='none';ov.innerHTML='';res(v)};ov.onclick=e=>{if(e.target===ov)close(null)};build(bx,close)})}
+function btns(bx,list){const r=mk('div','row');list.forEach(([t,c,f])=>{const b=mk('button',c,t);b.onclick=f;r.appendChild(b)});bx.appendChild(r)}
+function ask(title,msg,okLabel,danger){return modal((bx,close)=>{bx.appendChild(mk('h3','',title));bx.appendChild(mk('p','',msg));
+ btns(bx,[['ยกเลิก','g',()=>close(false)],[okLabel||'ตกลง',danger?'dg':'',()=>close(true)]])})}
+function passcode(){return modal((bx,close)=>{bx.appendChild(mk('h3','','ใส่รหัสอนุมัติ'));
+ const i=mk('input');i.type='password';i.inputMode='numeric';i.placeholder='รหัสอนุมัติ';i.autocomplete='off';bx.appendChild(i);
+ const er=mk('div','bad');er.style.minHeight='20px';bx.appendChild(er);
+ const go=()=>{if(i.value==='1706')close(true);else{er.textContent='รหัสไม่ถูกต้อง';i.value='';i.focus()}};
+ i.addEventListener('keydown',e=>{if(e.key==='Enter')go()});
+ btns(bx,[['ยกเลิก','g',()=>close(false)],['ยืนยัน','',go]]);setTimeout(()=>i.focus(),50)}).then(v=>v===true)}
+async function editRow(r){
+ if(!await passcode())return;
+ const walk=!!r.walk;
+ const res=await modal((bx,close)=>{bx.appendChild(mk('h3','','แก้ไขข้อมูล Supplier'));
+  const f=(lb,v,dis)=>{bx.appendChild(mk('label','',lb));const i=mk('input');i.value=v;i.disabled=!!dis;bx.appendChild(i);return i};
+  const n=f('ชื่อ Supplier',r.name),g=f('ประตู',r.gate),sl=f('เวลาจอง (เช่น 8:30 - 9:00)',r.slot,walk);
+  const er=mk('div','bad');er.style.minHeight='20px';bx.appendChild(er);
+  btns(bx,[['ลบรายการ','gd',()=>close('del')],['ยกเลิก','g',()=>close(null)],['บันทึก','',()=>{if(!n.value.trim()){er.textContent='กรอกชื่อ Supplier';return}if(!g.value.trim()){er.textContent='กรอกประตู';return}close({name:n.value.replace(/\s+/g,' ').trim(),gate:g.value.trim(),slot:sl.value.trim()})}]]);
+  bx.querySelector('.row button.gd').style.marginRight='auto'});
+ if(!res)return;
+ if(res==='del'){if(!await ask('ลบรายการนี้?','ลบ "'+r.name+'" ออกจากตาราง พร้อมข้อมูลเวลาที่บันทึกไว้ (มีผลกับทุกเครื่อง)','ลบ',true))return;
+  if(await delRow(r))say('✓ ลบรายการแล้ว','ok');return}
+ const f={name:res.name,gate:res.gate};if(!walk&&res.slot)f.slot=res.slot;
+ await patch(r,f,true);say('✓ แก้ไขข้อมูลแล้ว','ok')}
+$('clr').onclick=async()=>{
+ if(!await passcode())return;
+ const c=await modal((bx,close)=>{bx.appendChild(mk('h3','','ล้างข้อมูล'));bx.appendChild(mk('p','','การล้างมีผลกับทุกเครื่องที่เปิดอยู่ แนะนำให้ดาวน์โหลด Excel เก็บไว้ก่อน'));
+  const r=mk('div');r.style.cssText='display:flex;flex-direction:column;gap:8px;margin-top:12px';
+  [['ล้างเวลา/ข้อมูลที่บันทึก (เก็บรายชื่อ Supp ไว้)','dg','rec'],['ล้างทั้งหมด (รวมรายชื่อ Supp)','dg','all'],['ยกเลิก','g',null]].forEach(([t,k,v])=>{const b=mk('button',k,t);b.onclick=()=>close(v);r.appendChild(b)});bx.appendChild(r)});
+ if(!c)return;say('กำลังล้างข้อมูล…');
+ if(c==='rec'){
+  if(db){await pool(rows().filter(r=>r.walk||Object.keys(S.rec[r.n]||{}).length).map(r=>()=>r.walk?delRow(r):patch(r,{arr:'',end:'',bills:'',carrier:'',phone:''})),6)}
+  else{S.rec={};S.walk=[];save();render(true)}
+  say('✓ ล้างข้อมูลที่บันทึกแล้ว','ok')}
+ else{
+  if(db){await pool(rows().map(r=>()=>delRow(r)),6);await setMeta('-','')}
+  else{S={date:'-',data:[],walk:[],rec:{},wc:0};save();render(true)}
+  gf='all';$('q').value='';say('✓ ล้างข้อมูลทั้งหมดแล้ว โยนไฟล์ Supp เพื่อโหลดตารางใหม่','ok')}};
+/* ---------- walk-in ---------- */
+$('q').addEventListener('input',()=>render(true));
+$('wnow').onclick=()=>{$('wt').value=nowT()};
+$('wadd').onclick=async()=>{const n=$('wn').value.trim();if(!n){say('กรอกชื่อบริษัทก่อน','bad');return}
+ const ok=await addWalk(n,$('wg').value,$('wt').value);if(ok){$('wn').value='';$('wt').value='';say('✓ เพิ่ม '+n+' นอกตารางแล้ว','ok')}};
+/* ---------- upload schedule ---------- */
+function nt(v){if(typeof v==='number'&&v>=0&&v<1){const m=Math.round(v*1440);return pad(Math.floor(m/60)%24)+':'+pad(m%60)}
+ const m=/^(\d{1,2})[:.](\d{2})/.exec(String(v||'').trim());return m?pad(+m[1])+':'+pad(m[2]):''}
+function parse(wb){for(const nm of wb.SheetNames){
+  const a=XLSX.utils.sheet_to_json(wb.Sheets[nm],{header:1,defval:null,raw:true});let gate=null,date='',data=[],rc={};
+  for(const r of a){for(const c of r){if(typeof c!=='string')continue;const g=/ประตู\s*(\d+)/.exec(c);if(g)gate=g[1];const d=/(\d{1,2}\/\d{1,2}\/\d{4})/.exec(c);if(d&&!date)date=d[1]}
+   const n=r[1],name=typeof r[6]==='string'?r[6].replace(/\s+/g,' ').trim():'';
+   if(name&&gate&&/^\d+$/.test(String(n==null?'':n).trim())&&r[2]!=null){const id=+n;data.push({n:id,gate,slot:String(r[2]).trim(),name});
+    const c={arr:nt(r[3])||undefined,end:nt(r[4])||undefined,bills:r[5]!=null?String(r[5]):undefined,carrier:r[7]!=null?String(r[7]):undefined,phone:r[8]!=null?String(r[8]):undefined};
+    if(Object.values(c).some(x=>x))rc[id]=c}}
+  if(data.length)return{date:date||nm,data,rec:rc}}return null}
+async function applySchedule(p,fname){
+ say('กำลังโหลดตารางขึ้นระบบ…');
+ if(db){const keep=new Set(p.data.map(x=>x.n));
+  await pool(rows().filter(r=>r.walk||!keep.has(r.n)).map(r=>()=>delRow(r)),6);
+  await pool(p.data.map(x=>()=>{const c=p.rec[x.n]||{};return wr(()=>rowsC.doc('s'+x.n).set({n:x.n,gate:x.gate,slot:x.slot,name:x.name,walk:false,arr:c.arr||'',end:c.end||'',bills:c.bills||'',carrier:c.carrier||'',phone:c.phone||''}))}),6);
+  await setMeta(p.date,fname)}
+ else{S={date:p.date,data:p.data,rec:p.rec,walk:[],wc:0,file:fname||'',at:Date.now()};save()}
+ gf='all';$('q').value='';render(true);say('✓ โหลดตารางแล้ว '+p.data.length+' คิว วันที่ '+p.date,'ok')}
+$('up').onchange=e=>{const f=e.target.files[0];e.target.value='';if(!f)return;
+ const fr=new FileReader();fr.onload=()=>{try{const p=parse(XLSX.read(fr.result,{type:'array'}));
+  if(!p){say('ไม่พบรายการ Supp ในไฟล์ (ต้องเป็นรูปแบบตารางจองคิวเดิม)','bad');return}
+  const has=Object.keys(S.rec).length||S.walk.length;
+  const go=()=>applySchedule(p,f.name);
+  if(has)ask('แทนที่ตารางเดิม?','จะแทนที่ตารางและเวลาที่บันทึกไว้เดิมด้วยไฟล์ใหม่ ('+p.data.length+' คิว วันที่ '+p.date+') มีผลกับทุกเครื่อง แนะนำให้ดาวน์โหลด Excel ของเดิมก่อน','แทนที่').then(ok=>{if(ok)go()});else go()
+ }catch(err){say('อ่านไฟล์ไม่สำเร็จ','bad')}};fr.readAsArrayBuffer(f)};
+/* ---------- export ---------- */
+$('fab').onclick=()=>$('exp').click();
+$('exp').onclick=async()=>{
+ if(!window.XLSX){say('โหลดตัวสร้าง Excel ไม่สำเร็จ ลองรีเฟรชหน้า','bad');return}
+ const ds=S.date.replace(/[\/\\?*\[\]:]/g,'-');
+ const aoa=[['ตารางจองคิวส่งสินค้าคลังบุญมีทรัพย์ วันที่ '+S.date],['ประตู','ลำดับ','เวลาจอง','เวลาส่ง','เวลาสิ้นสุด','จำนวนบิล','รายชื่อ Supp','ชื่อขนส่ง','เบอร์โทรขนส่ง(กรณีฉุกเฉิน)','สถานะ']];
+ rows().forEach(r=>{const c=S.rec[r.n]||{};aoa.push([r.gate,r.walk?'นอกตาราง':r.n,r.slot,c.arr||'',c.end||'',c.bills||'',r.name,c.carrier||'',c.phone||'',status(r)[0]])});
+ try{const ws=XLSX.utils.aoa_to_sheet(aoa);ws['!cols']=[{wch:8},{wch:10},{wch:14},{wch:10},{wch:12},{wch:10},{wch:50},{wch:20},{wch:22},{wch:24}];
+  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,ds);
+  const blob=new Blob([XLSX.write(wb,{bookType:'xlsx',type:'array'})],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),fn='delivery_'+ds+'.xlsx';
+  try{const dl=window.claude&&await claude.use('downloads');if(dl){await dl.save({filename:fn,data:blob});say('ส่งออก '+fn+' แล้ว','ok');return}}catch(e){if(e&&e.code==='declined'){say('ยกเลิกการดาวน์โหลด');return}}
+  const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=fn;document.body.appendChild(a);a.click();a.remove();say('ส่งออก '+fn+' แล้ว','ok')
+ }catch(e){say('ส่งออกไม่สำเร็จ: '+(e&&e.message||e),'bad')}};
+/* ---------- boot ---------- */
+function localMode(){db=null;try{const x=JSON.parse(localStorage.getItem(LKEY)||'null');if(x&&x.data)S=x}catch(e){}loaded=true;render(true)}
+render(true);
+(async()=>{
+ try{db=window.claude?await claude.use('db'):null}catch(e){db=null}
+ if(!db){localMode();return}
+ try{const u=await claude.use('user');if(u){const c=await u.can('data.write');ro=(c===false)}}catch(e){}
+ rowsC=db.collection('rows');
+ rowsC.onSnapshot(snap=>{fromDocs(snap.docs);loaded=true;sched()},err=>{if(err&&err.code==='revoked'){ro=true}else{say('การเชื่อมต่อออนไลน์มีปัญหา ('+(err&&err.code)+')','bad')}loaded=true;render(true)});
+ db.doc('meta/info').onSnapshot(s=>{const d=s.exists&&s.data();S.date=(d&&d.date)||'-';S.file=(d&&d.file)||'';S.at=(d&&d.at)||0;sched()},()=>{});
+})();
+</script></body></html>
